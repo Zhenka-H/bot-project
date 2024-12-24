@@ -2,23 +2,47 @@
 
 namespace App\Http\Controllers;
 
-use BotMan\BotMan\BotMan;
-use BotMan\BotMan\BotManFactory;
-use BotMan\BotMan\Drivers\DriverManager;
+use Illuminate\Http\Request;
+use Telegram\Bot\Api;
 
 class BotController extends Controller
 {
-    public function handle()
+    protected $telegram;
+
+    public function __construct()
     {
-        DriverManager::loadDriver(\BotMan\Drivers\Web\WebDriver::class);
+        $this->telegram = new Api(env('TELEGRAM_BOT_TOKEN'));
+    }
 
-        $config = [];
-        $botman = BotManFactory::create($config);
+    // Handle incoming updates
+    public function handle(Request $request)
+    {
+        $update = $this->telegram->getWebhookUpdates();
 
-        $botman->hears('hello', function (BotMan $bot) {
-            $bot->reply('Hello! How can I assist you today?');
-        });
+        $chatId = $update['message']['chat']['id'] ?? null;
+        $text = $update['message']['text'] ?? '';
 
-        $botman->listen();
+        if ($chatId && $text) {
+            $responseText = $this->processMessage($text);
+            $this->telegram->sendMessage([
+                'chat_id' => $chatId,
+                'text' => $responseText,
+            ]);
+        }
+
+        return response()->json(['status' => 'success']);
+    }
+
+    // Process user messages
+    protected function processMessage($message)
+    {
+        switch (strtolower($message)) {
+            case '/start':
+                return 'Welcome to the bot! How can I assist you today?';
+            case 'hello':
+                return 'Hi there!';
+            default:
+                return 'Sorry, I didn’t understand that.';
+        }
     }
 }
