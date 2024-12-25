@@ -1,53 +1,25 @@
-# Use the official PHP image with FPM
-FROM php:8.1-fpm
-
-# Set working directory inside the container
+# Set the working directory
 WORKDIR /var/www/html
 
 # Install system dependencies and PHP extensions
-RUN apt-get update && apt-get install -y \
-    git \
-    curl \
-    libpng-dev \
-    libjpeg62-turbo-dev \
-    libfreetype6-dev \
-    zip \
-    unzip \
-    libzip-dev \
-    libonig-dev \
-    libxml2-dev \
-    libicu-dev \
-    libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
+RUN apt-get update && apt-get install -y libpng-dev libjpeg62-turbo-dev libfreetype6-dev zip \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_mysql gd zip mbstring bcmath
+    && docker-php-ext-install gd pdo_mysql
 
-# Install Composer
+# Install Composer globally
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Update Composer to the latest version
-RUN composer self-update
-
-# Copy project files into the container
-COPY . .
-
-# Ensure the correct permissions
-RUN chown -R www-data:www-data /var/www/html
+# Copy the Laravel app code into the container
+COPY . /var/www/html
 
 # Install Composer dependencies
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN composer install --ignore-platform-reqs --no-dev --optimize-autoloader
 
-# Check Composer version to confirm it's installed
-RUN composer --version
+# Set the appropriate file permissions
+RUN chown -R www-data:www-data /var/www/html
 
-# Install Node.js and npm dependencies
-RUN curl -sL https://deb.nodesource.com/setup_16.x | bash \
-    && apt-get install -y nodejs \
-    && npm install
+# Expose the port for the app
+EXPOSE 8000
 
-# Expose port 8000 for Laravel app
-EXPOSE 9000
-
-# Command to run the Laravel application
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+# Run the Laravel app
+CMD php artisan serve --host=0.0.0.0 --port=8000
