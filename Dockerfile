@@ -20,13 +20,13 @@ RUN apt-get update && apt-get install -y \
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Copy the project files into the container
+# Copy project files into the container
 COPY . .
 
-# Run Composer install, ignoring platform requirements
+# Install Composer dependencies
 RUN composer install --ignore-platform-reqs --no-dev --optimize-autoloader
 
-# Install Node.js dependencies (for assets)
+# Install Node.js and npm dependencies
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash \
     && apt-get install -y nodejs \
     && npm install
