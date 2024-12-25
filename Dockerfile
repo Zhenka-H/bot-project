@@ -14,17 +14,32 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     libzip-dev \
+    libonig-dev \
+    libxml2-dev \
+    libicu-dev \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_mysql gd zip
+    && docker-php-ext-install pdo_mysql gd zip mbstring bcmath
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
+# Update Composer to the latest version
+RUN composer self-update
+
 # Copy project files into the container
 COPY . .
 
+# Ensure the correct permissions
+RUN chown -R www-data:www-data /var/www/html
+
 # Install Composer dependencies
-RUN composer install --ignore-platform-reqs --no-dev --optimize-autoloader
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Check Composer version to confirm it's installed
+RUN composer --version
 
 # Install Node.js and npm dependencies
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash \
