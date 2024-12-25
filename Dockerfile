@@ -47,7 +47,7 @@ RUN curl -sL https://deb.nodesource.com/setup_16.x | bash \
     && npm install
 
 # Expose port 8000 for Laravel app
-EXPOSE 8000
+EXPOSE 9000
 
 # Command to run the Laravel application
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
