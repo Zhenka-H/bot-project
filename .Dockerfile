@@ -1,10 +1,10 @@
-# Use PHP with FPM
+# Use the official PHP image with FPM
 FROM php:8.1-fpm
 
-# Set working directory
+# Set working directory inside the container
 WORKDIR /var/www/html
 
-# Install system dependencies
+# Install system dependencies and PHP extensions
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -20,14 +20,19 @@ RUN apt-get update && apt-get install -y \
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Copy project files
+# Copy the project files into the container
 COPY . .
 
-# Install Laravel dependencies
-RUN composer install --no-dev --optimize-autoloader
+# Run Composer install, ignoring platform requirements
+RUN composer install --ignore-platform-reqs --no-dev --optimize-autoloader
 
-# Expose port
-EXPOSE 9000
+# Install Node.js dependencies (for assets)
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash \
+    && apt-get install -y nodejs \
+    && npm install
 
-# Command to start the application
+# Expose port 8000 for Laravel app
+EXPOSE 8000
+
+# Command to run the Laravel application
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
