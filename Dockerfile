@@ -1,4 +1,4 @@
-FROM php:8.1-fpm
+FROM php:8.0-fpm
 
 # Copy composer.lock and composer.json
 COPY composer.lock composer.json /var/www/
@@ -18,7 +18,10 @@ RUN apt-get update && apt-get install -y \
     vim \
     unzip \
     git \
-    curl
+    curl \
+    libmysqlclient-dev \
+    libmbstring-dev \
+    zlib1g-dev
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
