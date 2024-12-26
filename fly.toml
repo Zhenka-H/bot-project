@@ -1,1 +1,3 @@
 app = "bot-project"
+[build]
+  dockerfile = "Dockerfile"
