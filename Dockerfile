@@ -16,6 +16,6 @@ RUN docker-php-ext-install gd zip pdo pdo_mysql
 WORKDIR /var/www
 COPY . .
 
-RUN composer install --no-dev --optimize-autoloader --prefer-dist
+RUN composer install --no-dev --optimize-autoloader --prefer-dist -vvv
 
 CMD ["php-fpm"]
