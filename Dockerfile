@@ -15,6 +15,9 @@ RUN docker-php-ext-install gd zip pdo pdo_mysql
 WORKDIR /var/www
 COPY . .
 
+RUN php -v
+RUN composer -v
+
 # Install Laravel dependencies
 RUN composer install --no-dev --optimize-autoloader --prefer-dist
 
