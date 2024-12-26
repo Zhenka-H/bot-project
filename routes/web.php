@@ -1,7 +1,7 @@
 <?php
 
+use App\Http\Controllers\TelegramBotController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\BotController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,4 +18,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::post('/bot/webhook', [BotController::class, 'handle']);
+Route::get('/set-webhook', [TelegramBotController::class, 'setWebhook']);
