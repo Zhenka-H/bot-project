@@ -14,6 +14,9 @@ RUN docker-php-ext-install gd zip pdo pdo_mysql
 WORKDIR /var/www
 COPY . .
 
+# Clear Composer cache before installing dependencies
+RUN composer clear-cache
+
 # Run Composer install
 RUN composer install --no-dev --optimize-autoloader --prefer-dist
 
