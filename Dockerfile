@@ -1,23 +1,19 @@
 FROM php:8.1-fpm
 
-# Install dependencies
 RUN apt-get update && apt-get install -y \
     libpng-dev libjpeg-dev libfreetype6-dev zlib1g-dev libzip-dev unzip git curl libcurl4-openssl-dev
 
-# Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Install PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 RUN docker-php-ext-install gd zip pdo pdo_mysql
 
 WORKDIR /var/www
 COPY . .
 
-# Clear Composer cache before installing dependencies
-RUN composer clear-cache
+RUN chown -R www-data:www-data /var/www
 
-# Run Composer install
-RUN composer install --no-dev --optimize-autoloader --prefer-dist
+RUN composer clear-cache
+RUN composer install --no-dev --optimize-autoloader --prefer-dist -vvv
 
 CMD ["php-fpm"]
