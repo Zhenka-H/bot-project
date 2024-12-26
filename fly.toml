@@ -4,6 +4,7 @@
 #
 
 app = 'bot-project'
+primary_region = 'fra'
 
 [build]
   dockerfile = 'Dockerfile'
